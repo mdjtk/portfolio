@@ -10,51 +10,92 @@ const GithubIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
 );
 
-interface Project {
-  id: string;
-  title: string;
-  desc: string;
-  tags: string[];
-  wide: boolean;
-  github: string;
-  live?: string;
-  structure?: FileNode[];
-}
+const FALLBACK_PROJECTS = [
+  { 
+    id: '01', 
+    title: 'AI-Powered Dashboard', 
+    desc: 'A full-stack analytics dashboard with real-time data visualization, natural language querying via Claude, and role-based access control.', 
+    tags: ['Next.js', 'TypeScript', 'Prisma', 'Claude API'], 
+    wide: true,
+    github: "https://github.com/mdjtk/ai-dashboard",
+    live: "https://ai-dash.example.com",
+    structure: [
+      { name: "src", type: "folder", children: [
+        { name: "app", type: "folder", children: [
+          { name: "api", type: "folder", children: [{ name: "query", type: "folder", children: [{ name: "route.ts", type: "file" }] }] },
+          { name: "dashboard", type: "folder", children: [{ name: "page.tsx", type: "file" }] }
+        ]},
+        { name: "lib", type: "folder", children: [{ name: "claude.ts", type: "file" }] }
+      ]}
+    ] as FileNode[]
+  },
+  { 
+    id: '02', 
+    title: 'React Hooks Toolkit', 
+    desc: '187 stars on GitHub. Production-ready hooks for auth, data fetching, and animations.', 
+    tags: ['TypeScript', 'React', 'OSS'], 
+    wide: false,
+    github: "https://github.com/mdjtk/hooks-toolkit"
+  },
+  { 
+    id: '03', 
+    title: 'E-commerce Platform', 
+    desc: 'Multi-vendor marketplace with Stripe Connect and real-time tracking.', 
+    tags: ['Next.js', 'Stripe', 'PostgreSQL'], 
+    wide: false,
+    github: "https://github.com/mdjtk/shop",
+    live: "https://shop.example.com"
+  },
+  { 
+    id: '04', 
+    title: 'AI Commit CLI', 
+    desc: 'Generates conventional commit messages from your git diff using Claude.', 
+    tags: ['Node.js', 'Claude API', 'CLI'], 
+    wide: false,
+    github: "https://github.com/mdjtk/aicommits"
+  },
+  { 
+    id: '05', 
+    title: 'Developer Portfolio', 
+    desc: 'This very site. Built with Next.js, VengeanceUI, and a custom AI assistant.', 
+    tags: ['Next.js', 'Framer Motion', 'Claude API'], 
+    wide: true,
+    github: "https://github.com/mdjtk/portfolio"
+  },
+];
 
 export function ProjectsSection() {
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    async function fetchProjects() {
       try {
         const res = await fetch('https://api.github.com/users/mdjtk/repos?sort=updated&per_page=6');
-        if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
-        
-        if (!Array.isArray(data)) {
-          throw new Error(data.message || 'Failed to fetch projects');
+        if (Array.isArray(data)) {
+          const formatted = data.map((repo, idx) => ({
+            id: String(idx + 1).padStart(2, '0'),
+            title: repo.name,
+            desc: repo.description || 'No description provided.',
+            tags: repo.language ? [repo.language] : ['Code'],
+            wide: idx === 0 || idx === 3,
+            github: repo.html_url,
+            live: repo.homepage || null,
+          }));
+          setProjects(formatted);
+        } else {
+          setProjects(FALLBACK_PROJECTS);
         }
-
-        const fetchedProjects: Project[] = data.map((repo: any, index: number) => ({
-          id: String(index + 1).padStart(2, '0'),
-          title: repo.name.replace(/-/g, ' '),
-          desc: repo.description || 'No description provided.',
-          tags: repo.language ? [repo.language] : ['Code'],
-          wide: index === 0 || index === 3,
-          github: repo.html_url,
-          live: repo.homepage || undefined,
-        }));
-        setProjects(fetchedProjects);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Failed to fetch projects", error);
+        setProjects(FALLBACK_PROJECTS);
       } finally {
         setLoading(false);
       }
-    };
-
+    }
     fetchProjects();
   }, []);
 
@@ -95,53 +136,49 @@ export function ProjectsSection() {
           ))}
         </div>
 
-        {loading ? (
-          <div className="text-center text-neutral-500 py-12">Loading projects from GitHub...</div>
-        ) : (
-          <ExpandableBentoGrid>
-            <AnimatePresence mode="popLayout">
-              {filteredProjects.map((p) => (
-                <BentoCard
-                  key={p.id}
-                  id={p.id}
-                  title={p.title}
-                  description={p.desc}
-                  tags={p.tags}
-                  wide={p.wide}
-                  expanded={expandedId === p.id}
-                  onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
-                >
-                  <div className="grid md:grid-cols-2 gap-8 mt-4">
-                     <div className="space-y-4">
-                        <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Tech Stack</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {p.tags.map(t => (
-                            <span key={t} className="px-3 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-mono">{t}</span>
-                          ))}
-                        </div>
-                        <div className="flex gap-4 pt-4">
-                          {p.live && (
-                            <a href={p.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-primary hover:underline">
-                              <ExternalLink className="w-4 h-4" /> Live Demo
-                            </a>
-                          )}
-                          <a href={p.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-black dark:hover:text-white transition-colors">
-                            <div className="w-4 h-4"><GithubIcon /></div> Source Code
+        <ExpandableBentoGrid>
+          <AnimatePresence mode="popLayout">
+            {filteredProjects.map((p) => (
+              <BentoCard
+                key={p.id}
+                id={p.id}
+                title={p.title}
+                description={p.desc}
+                tags={p.tags}
+                wide={p.wide}
+                expanded={expandedId === p.id}
+                onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
+              >
+                <div className="grid md:grid-cols-2 gap-8 mt-4">
+                   <div className="space-y-4">
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Tech Stack</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {p.tags.map(t => (
+                          <span key={t} className="px-3 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-mono">{t}</span>
+                        ))}
+                      </div>
+                      <div className="flex gap-4 pt-4">
+                        {p.live && (
+                          <a href={p.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+                            <ExternalLink className="w-4 h-4" /> Live Demo
                           </a>
-                        </div>
+                        )}
+                        <a href={p.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-neutral-500 hover:text-black dark:hover:text-white transition-colors">
+                          <div className="w-4 h-4"><GithubIcon /></div> Source Code
+                        </a>
+                      </div>
+                   </div>
+                   {p.structure && (
+                     <div className="space-y-4">
+                        <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Project Architecture</h4>
+                        <FolderPreview data={p.structure} className="border-none shadow-none bg-transparent p-0" />
                      </div>
-                     {p.structure && (
-                       <div className="space-y-4">
-                          <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Project Architecture</h4>
-                          <FolderPreview data={p.structure} className="border-none shadow-none bg-transparent p-0" />
-                       </div>
-                     )}
-                  </div>
-                </BentoCard>
-              ))}
-            </AnimatePresence>
-          </ExpandableBentoGrid>
-        )}
+                   )}
+                </div>
+              </BentoCard>
+            ))}
+          </AnimatePresence>
+        </ExpandableBentoGrid>
       </div>
     </section>
   );

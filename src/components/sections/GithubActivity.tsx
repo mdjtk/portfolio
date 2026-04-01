@@ -4,58 +4,44 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { GitBranch, Activity } from "lucide-react";
 
-interface Commit {
-  msg: string;
-  repo: string;
-  time: string;
-}
+const FALLBACK_COMMITS = [
+  { msg: 'feat: add AI chat assistant to portfolio', repo: 'portfolio-v2', time: '2h' },
+  { msg: 'fix: resolve hydration mismatch in dark mode', repo: 'portfolio-v2', time: '4h' },
+  { msg: 'feat: implement ⌘K command palette', repo: 'portfolio-v2', time: '6h' },
+  { msg: 'docs: update README with component list', repo: 'react-hooks-toolkit', time: '1d' },
+  { msg: 'feat: add useLocalStorage hook', repo: 'react-hooks-toolkit', time: '1d' },
+];
 
 export function GithubActivity() {
   const [heatmapCells, setHeatmapCells] = useState<{ id: number; cls: string; title: string }[]>([]);
-  const [commits, setCommits] = useState<Commit[]>([]);
-  const [loadingCommits, setLoadingCommits] = useState(true);
+  const [commits, setCommits] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchCommits = async () => {
+    async function fetchActivity() {
       try {
-        const res = await fetch('https://api.github.com/users/mdjtk/events/public');
-        if (!res.ok) throw new Error('Failed to fetch events');
-        const events = await res.json();
-        
-        if (!Array.isArray(events)) {
-          throw new Error(events.message || 'Failed to fetch events');
+        const res = await fetch('https://api.github.com/users/mdjtk/events/public?per_page=10');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const recentCommits = data
+            .filter(event => event.type === 'PushEvent' && event.payload && Array.isArray(event.payload.commits))
+            .flatMap(event => 
+              event.payload.commits.map((c: any) => ({
+                msg: c.message.split('\n')[0],
+                repo: event.repo.name.split('/')[1] || event.repo.name,
+                time: new Date(event.created_at).toLocaleDateString()
+              }))
+            )
+            .slice(0, 5);
+          setCommits(recentCommits.length > 0 ? recentCommits : FALLBACK_COMMITS);
+        } else {
+          setCommits(FALLBACK_COMMITS);
         }
-
-        const pushEvents = events.filter((e: any) => e.type === 'PushEvent').slice(0, 5);
-        const formattedCommits = pushEvents.map((event: any) => {
-          const commit = event.payload?.commits?.[0];
-          const date = new Date(event.created_at);
-          const now = new Date();
-          const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-          const timeStr = diffInHours < 24 ? `${diffInHours}h` : `${Math.floor(diffInHours / 24)}d`;
-          
-          return {
-            msg: commit ? commit.message.split('\n')[0] : 'Pushed to repository',
-            repo: event.repo.name.split('/')[1],
-            time: timeStr
-          };
-        });
-        
-        setCommits(formattedCommits);
       } catch (error) {
-        console.error('Error fetching commits:', error);
-        // Fallback data
-        setCommits([
-          { msg: 'feat: add AI chat assistant to portfolio', repo: 'portfolio-v2', time: '2h' },
-          { msg: 'fix: resolve hydration mismatch in dark mode', repo: 'portfolio-v2', time: '4h' },
-          { msg: 'feat: implement ⌘K command palette', repo: 'portfolio-v2', time: '6h' },
-        ]);
-      } finally {
-        setLoadingCommits(false);
+        console.error("Failed to fetch activity", error);
+        setCommits(FALLBACK_COMMITS);
       }
-    };
-
-    fetchCommits();
+    }
+    fetchActivity();
   }, []);
 
   useEffect(() => {
@@ -91,21 +77,15 @@ export function GithubActivity() {
             </div>
             
             <div className="space-y-3">
-              {loadingCommits ? (
-                <div className="text-sm text-neutral-500">Loading recent commits...</div>
-              ) : commits.length === 0 ? (
-                <div className="text-sm text-neutral-500">No recent commits found.</div>
-              ) : (
-                commits.map((c, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 flex flex-col gap-1">
-                     <div className="flex justify-between items-center">
-                       <span className="text-[10px] font-mono text-primary uppercase tracking-wider">{c.repo}</span>
-                       <span className="text-[10px] text-neutral-400 uppercase font-bold">{c.time} ago</span>
-                     </div>
-                     <p className="text-xs font-medium text-neutral-600 dark:text-neutral-300 leading-snug">{c.msg}</p>
-                  </div>
-                ))
-              )}
+              {commits.map((c, i) => (
+                <div key={i} className="p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 flex flex-col gap-1">
+                   <div className="flex justify-between items-center">
+                     <span className="text-[10px] font-mono text-primary uppercase tracking-wider">{c.repo}</span>
+                     <span className="text-[10px] text-neutral-400 uppercase font-bold">{c.time} ago</span>
+                   </div>
+                   <p className="text-xs font-medium text-neutral-600 dark:text-neutral-300 leading-snug">{c.msg}</p>
+                </div>
+              ))}
             </div>
           </div>
 

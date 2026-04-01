@@ -91,7 +91,7 @@ export function ChatWidget() {
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-[200] bg-[var(--p-accent)] text-[#0a0a0a] w-[48px] h-[48px] sm:w-[52px] sm:h-[52px] rounded-full text-xl shadow-[0_4px_24px_rgba(200,241,53,0.3)] transition-all hover:scale-110 flex items-center justify-center border-none cursor-pointer mt-0 mb-[55px]"
+        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 mb-[50px] z-[200] bg-[var(--p-accent)] text-[#0a0a0a] w-[48px] h-[48px] sm:w-[52px] sm:h-[52px] rounded-full text-xl shadow-[0_4px_24px_rgba(200,241,53,0.3)] transition-all hover:scale-110 flex items-center justify-center border-none cursor-pointer"
         title="Ask me anything"
       >
         💬

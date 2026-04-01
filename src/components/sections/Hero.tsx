@@ -60,10 +60,10 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 sm:mb-8 leading-[0.95] sm:leading-[0.9]"
+          className="text-[53px] font-black tracking-tighter mb-6 sm:mb-8 leading-[0.95] sm:leading-[0.9]"
         >
           MIDLAJ <br className="hidden sm:block" />
-          <span className="text-neutral-800 dark:text-neutral-800">THONIKKADAVAN</span>
+          <span className="text-[51px] text-neutral-800 dark:text-neutral-800">THONIKKADAVAN</span>
         </motion.h1>
 
         <motion.div

@@ -15,48 +15,53 @@ const LinkedinIcon = () => (
 
 export function AboutSection() {
   return (
-    <section id="about" className="px-6 md:px-12 py-24 bg-transparent border-t border-[var(--p-border)]">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center gap-12 md:gap-20">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="shrink-0"
-          >
-            <Avatar 
-              src="https://github.com/mdjtk.png" 
-              alt="Midlaj Thonikkadavan"
-              size={200}
-            />
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col gap-6 text-center md:text-left"
-          >
-            <h2 className="text-3xl font-bold tracking-tight">About Me</h2>
-            <div className="space-y-4 text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              <p>
-                I'm <span className="text-black dark:text-white font-semibold">Midlaj Thonikkadavan</span>, 
-                a Full Stack Developer from Kerala. I build high-performance web applications 
-                using Next.js, TypeScript, and modern AI tools.
-              </p>
-              <p>
-                With 3+ years in the industry, I focus on clean code and exceptional UX. 
-                I'm passionate about open source and continuous learning.
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-2">
-              <SocialFlipButton name="GitHub" href="https://github.com/mdjtk" icon={<div className="w-5 h-5"><GithubIcon /></div>} />
-              <SocialFlipButton name="LinkedIn" href="https://linkedin.com/in/midlajthonikkadavan" icon={<div className="w-5 h-5"><LinkedinIcon /></div>} />
-              <SocialFlipButton name="Mail" href="mailto:midlajthonikkadavan01@gmail.com" icon={<Mail className="w-5 h-5" />} />
-            </div>
-          </motion.div>
-        </div>
+    <section id="about" className="px-6 md:px-12 py-32 bg-transparent border-t border-[var(--p-border)]">
+      <div className="max-w-3xl mx-auto text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col items-center gap-12"
+        >
+          <h2 className="text-6xl sm:text-7xl font-black tracking-tighter font-display uppercase leading-none">About Me</h2>
+          
+          <div className="space-y-8 text-lg sm:text-xl text-neutral-400 leading-relaxed font-medium">
+            <p>
+              I'm <span className="text-white font-black">Midlaj Thonikkadavan</span>, 
+              a Full Stack Developer from Kerala. I build high-performance web applications 
+              using Next.js, TypeScript, and modern AI tools.
+            </p>
+            <p className="opacity-40">
+              With 3+ years in the industry, I focus on clean code and exceptional UX. 
+              I'm passionate about open source and continuous learning.
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-3">
+            <a 
+              href="https://github.com/mdjtk" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#111] border border-white/5 text-xs font-bold text-white/60 hover:text-white hover:border-white/20 transition-all"
+            >
+              <div className="w-4 h-4"><GithubIcon /></div> GitHub
+            </a>
+            <a 
+              href="https://linkedin.com/in/midlajthonikkadavan" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#111] border border-white/5 text-xs font-bold text-white/60 hover:text-white hover:border-white/20 transition-all"
+            >
+              <div className="w-4 h-4"><LinkedinIcon /></div> LinkedIn
+            </a>
+            <a 
+              href="mailto:midlajthonikkadavan01@gmail.com"
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-[#111] border border-white/5 text-xs font-bold text-white/60 hover:text-white hover:border-white/20 transition-all"
+            >
+              <Mail className="w-4 h-4" /> Mail
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

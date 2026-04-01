@@ -67,8 +67,8 @@ export function BentoCard({
           </div>
         </div>
         
-        <h3 className="text-2xl font-bold mb-3 group-hover:translate-x-1 transition-transform duration-300">{title}</h3>
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed mb-6 flex-grow">{description}</p>
+        <h3 className="text-3xl font-black mb-3 group-hover:translate-x-1 transition-transform duration-300 tracking-tight">{title}</h3>
+        <p className="text-neutral-500 dark:text-neutral-400 text-base leading-relaxed mb-6 flex-grow">{description}</p>
         
         <div className="mt-auto">
           {expanded ? (

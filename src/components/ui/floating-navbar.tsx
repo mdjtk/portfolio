@@ -42,14 +42,14 @@ export function FloatingNavbar({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        initial={{ opacity: 1, y: 100 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{
-          y: visible ? 0 : 100,
+          y: visible ? 0 : 20,
           opacity: visible ? 1 : 0,
         }}
         transition={{ duration: 0.2 }}
         className={cn(
-          "flex w-full md:max-w-fit fixed bottom-0 md:bottom-8 inset-x-0 mx-auto border-t md:border border-neutral-200 dark:border-white/10 md:rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-md shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] px-6 py-4 md:py-3 items-center justify-center space-x-8 md:space-x-12",
+          "flex max-w-fit fixed bottom-8 md:bottom-auto md:top-8 inset-x-0 mx-auto border border-neutral-200 dark:border-white/10 rounded-full bg-white/70 dark:bg-black/70 backdrop-blur-md shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] z-[5000] px-6 py-3 items-center justify-center space-x-6 md:space-x-12",
           className
         )}
       >

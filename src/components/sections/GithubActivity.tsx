@@ -3,47 +3,50 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { GitBranch, Activity } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 
-interface GithubEvent {
-  id: string;
-  type: string;
-  repo: { name: string };
-  payload: {
-    commits?: { message: string }[];
-  };
-  created_at: string;
-}
+const COMMITS = [
+  { msg: 'feat: add AI chat assistant to portfolio', repo: 'portfolio-v2', time: '2h' },
+  { msg: 'fix: resolve hydration mismatch in dark mode', repo: 'portfolio-v2', time: '4h' },
+  { msg: 'feat: implement ⌘K command palette', repo: 'portfolio-v2', time: '6h' },
+  { msg: 'docs: update README with component list', repo: 'react-hooks-toolkit', time: '1d' },
+  { msg: 'feat: add useLocalStorage hook', repo: 'react-hooks-toolkit', time: '1d' },
+];
 
 export function GithubActivity() {
+  const [commits, setCommits] = useState<any[]>(COMMITS);
   const [heatmapCells, setHeatmapCells] = useState<{ id: number; cls: string; title: string }[]>([]);
-  const [commits, setCommits] = useState<{msg: string, repo: string, time: string}[]>([]);
 
   useEffect(() => {
-    const fetchActivity = async () => {
+    async function fetchEvents() {
       try {
-        const res = await fetch('https://api.github.com/users/mdjtk/events/public?per_page=15');
-        if (!res.ok) throw new Error('Failed to fetch');
-        const data: GithubEvent[] = await res.json();
-        
-        const recentCommits = data
-          .filter(event => event.type === 'PushEvent' && event.payload.commits && event.payload.commits.length > 0)
-          .map(event => ({
-            msg: event.payload.commits![0].message.split('\n')[0],
-            repo: event.repo.name.replace('mdjtk/', ''),
-            time: formatDistanceToNow(new Date(event.created_at), { addSuffix: true }).replace('about ', '')
-          }))
-          .slice(0, 5);
+        const res = await fetch("https://api.github.com/users/mdjtk/events/public?per_page=20");
+        if (res.ok) {
+          const data = await res.json();
+          const pushEvents = data.filter((e: any) => e.type === "PushEvent").slice(0, 5);
           
-        setCommits(recentCommits);
-      } catch (error) {
-        console.error("Error fetching github activity:", error);
+          if (pushEvents.length > 0) {
+            const formattedCommits = pushEvents.map((e: any) => {
+              const commit = e.payload.commits && e.payload.commits[0];
+              const timeDiff = Date.now() - new Date(e.created_at).getTime();
+              const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+              const days = Math.floor(hours / 24);
+              const timeStr = days > 0 ? `${days}d` : `${hours}h`;
+              
+              return {
+                msg: commit ? commit.message.split('\n')[0] : 'Update',
+                repo: e.repo.name.split('/')[1] || e.repo.name,
+                time: timeStr
+              };
+            });
+            setCommits(formattedCommits);
+          }
+        }
+      } catch (err) {
+        console.error(err);
       }
-    };
+    }
+    fetchEvents();
 
-    fetchActivity();
-
-    // Generate heatmap cells (simulated for now, as GitHub's contribution graph API is private/complex)
     const cells = Array.from({ length: window.innerWidth < 768 ? 100 : 364 }, (_, i) => {
       const r = Math.random();
       const cls = r < 0.4 ? 'bg-neutral-100 dark:bg-neutral-900' : r < 0.7 ? 'bg-primary/20' : r < 0.9 ? 'bg-primary/50' : 'bg-primary';

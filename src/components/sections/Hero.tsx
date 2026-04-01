@@ -4,8 +4,6 @@ import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { FlipFadeText } from "@/components/ui/flip-fade-text";
 
-import AnimatedButton from "@/components/ui/animated-button";
-
 const JOB_TITLES = [
   "Full Stack Developer",
   "Next.js Expert",
@@ -86,20 +84,22 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-2 sm:mt-4">
-            <AnimatedButton
-              as="a"
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               href="#projects"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-[var(--p-accent)] text-[#0a0a0a] font-bold text-xs sm:text-sm shadow-lg shadow-[var(--p-accent)]/20"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-[var(--p-accent)] text-[#0a0a0a] font-bold text-xs sm:text-sm shadow-lg shadow-[var(--p-accent)]/20 text-center"
             >
               View Projects
-            </AnimatedButton>
-            <AnimatedButton
-              as="a"
+            </motion.a>
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               href="mailto:midlajthonikkadavan01@gmail.com"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-transparent border border-[var(--p-border2)] text-[var(--p-text)] font-bold text-xs sm:text-sm"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-transparent border border-[var(--p-border2)] text-[var(--p-text)] font-bold text-xs sm:text-sm text-center"
             >
               Let&apos;s Talk
-            </AnimatedButton>
+            </motion.a>
           </div>
         </motion.div>
       </motion.div>

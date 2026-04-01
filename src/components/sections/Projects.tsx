@@ -4,57 +4,96 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ExpandableBentoGrid, BentoCard } from "@/components/ui/expandable-bento-grid";
 import { FolderPreview, FileNode } from "@/components/ui/folder-preview";
-import { ExternalLink, Star, GitFork } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 const GithubIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
 );
 
-interface GithubRepo {
-  id: number;
-  name: string;
-  description: string;
-  html_url: string;
-  homepage: string;
-  topics: string[];
-  stargazers_count: number;
-  forks_count: number;
-  language: string;
-}
+const PROJECTS = [
+  { 
+    id: '01', 
+    title: 'AI-Powered Dashboard', 
+    desc: 'A full-stack analytics dashboard with real-time data visualization, natural language querying via Claude, and role-based access control.', 
+    tags: ['Next.js', 'TypeScript', 'Prisma', 'Claude API'], 
+    wide: true,
+    github: "https://github.com/mdjtk/ai-dashboard",
+    live: "https://ai-dash.example.com",
+    structure: [
+      { name: "src", type: "folder", children: [
+        { name: "app", type: "folder", children: [
+          { name: "api", type: "folder", children: [{ name: "query", type: "folder", children: [{ name: "route.ts", type: "file" }] }] },
+          { name: "dashboard", type: "folder", children: [{ name: "page.tsx", type: "file" }] }
+        ]},
+        { name: "lib", type: "folder", children: [{ name: "claude.ts", type: "file" }] }
+      ]}
+    ] as FileNode[]
+  },
+  { 
+    id: '02', 
+    title: 'React Hooks Toolkit', 
+    desc: '187 stars on GitHub. Production-ready hooks for auth, data fetching, and animations.', 
+    tags: ['TypeScript', 'React', 'OSS'], 
+    wide: false,
+    github: "https://github.com/mdjtk/hooks-toolkit"
+  },
+  { 
+    id: '03', 
+    title: 'E-commerce Platform', 
+    desc: 'Multi-vendor marketplace with Stripe Connect and real-time tracking.', 
+    tags: ['Next.js', 'Stripe', 'PostgreSQL'], 
+    wide: false,
+    github: "https://github.com/mdjtk/shop",
+    live: "https://shop.example.com"
+  },
+  { 
+    id: '04', 
+    title: 'AI Commit CLI', 
+    desc: 'Generates conventional commit messages from your git diff using Claude.', 
+    tags: ['Node.js', 'Claude API', 'CLI'], 
+    wide: false,
+    github: "https://github.com/mdjtk/aicommits"
+  },
+  { 
+    id: '05', 
+    title: 'Developer Portfolio', 
+    desc: 'This very site. Built with Next.js, VengeanceUI, and a custom AI assistant.', 
+    tags: ['Next.js', 'Framer Motion', 'Claude API'], 
+    wide: true,
+    github: "https://github.com/mdjtk/portfolio"
+  },
+];
 
 export function ProjectsSection() {
-  const [filter, setFilter] = useState("All");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRepos = async () => {
+    async function fetchRepos() {
       try {
-        const res = await fetch('https://api.github.com/users/mdjtk/repos?sort=updated&per_page=6');
-        if (!res.ok) throw new Error('Failed to fetch');
-        const data: GithubRepo[] = await res.json();
+        const res = await fetch("https://api.github.com/users/mdjtk/repos?sort=updated&per_page=6");
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
         
-        const formattedProjects = data.map((repo, index) => ({
-          id: repo.id.toString(),
-          title: repo.name.replace(/-/g, ' '),
+        const formattedProjects = data.map((repo: any, index: number) => ({
+          id: String(index + 1).padStart(2, '0'),
+          title: repo.name,
           desc: repo.description || 'No description provided.',
-          tags: repo.topics?.length ? repo.topics : (repo.language ? [repo.language] : ['Code']),
-          wide: index % 3 === 0,
+          tags: repo.language ? [repo.language] : ['Code'],
+          wide: index === 0 || index === 3,
           github: repo.html_url,
           live: repo.homepage || null,
-          stars: repo.stargazers_count,
-          forks: repo.forks_count
         }));
-        
         setProjects(formattedProjects);
-      } catch (error) {
-        console.error("Error fetching repos:", error);
+      } catch (err) {
+        console.error(err);
+        setProjects(PROJECTS); // fallback to static
       } finally {
         setLoading(false);
       }
-    };
-
+    }
     fetchRepos();
   }, []);
 

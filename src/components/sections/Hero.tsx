@@ -6,9 +6,9 @@ import { FlipFadeText } from "@/components/ui/flip-fade-text";
 
 const JOB_TITLES = [
   "Full Stack Developer",
+  "UI/UX Enthusiast",
   "Next.js Expert",
-  "AI Integration",
-  "UI/UX Designer"
+  "Kerala, India"
 ];
 
 export function HeroSection() {
@@ -60,7 +60,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-[-0.05em] sm:tracking-[-0.08em] mb-6 sm:mb-8 leading-[0.85] sm:leading-[0.8] font-display uppercase"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 sm:mb-8 leading-[0.95] sm:leading-[0.9]"
         >
           MIDLAJ <br className="hidden sm:block" />
           <span className="text-neutral-800 dark:text-neutral-800">THONIKKADAVAN</span>
@@ -84,22 +84,18 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-2 sm:mt-4">
-            <motion.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <a
               href="#projects"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-[var(--p-accent)] text-[#0a0a0a] font-bold text-xs sm:text-sm shadow-lg shadow-[var(--p-accent)]/20 text-center"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-[var(--p-accent)] text-[#0a0a0a] font-bold text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-[var(--p-accent)]/20"
             >
               View Projects
-            </motion.a>
-            <motion.a
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            </a>
+            <a
               href="mailto:midlajthonikkadavan01@gmail.com"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-transparent border border-[var(--p-border2)] text-[var(--p-text)] font-bold text-xs sm:text-sm text-center"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-full bg-transparent border border-[var(--p-border2)] text-[var(--p-text)] font-bold text-xs sm:text-sm hover:bg-[var(--p-bg3)] transition-all"
             >
               Let&apos;s Talk
-            </motion.a>
+            </a>
           </div>
         </motion.div>
       </motion.div>

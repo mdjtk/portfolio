@@ -9,6 +9,7 @@ import { geminiService } from '@/services/gemini';
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -22,10 +23,22 @@ export function ChatWidget() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isLoading]);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSend = async (text: string = input) => {
     const msg = text.trim();
@@ -75,10 +88,28 @@ export function ChatWidget() {
 
   return (
     <>
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="fixed bottom-24 right-6 sm:bottom-28 sm:right-8 z-[150] w-12 h-12 bg-[var(--p-bg3)] border border-[var(--p-border2)] text-[var(--p-text)] rounded-full flex items-center justify-center hover:bg-[var(--p-border)] transition-colors shadow-lg"
+            title="Back to Top"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 15l-6-6-6 6"/>
+            </svg>
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       {/* Chat Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-[200] bg-[var(--p-accent)] text-[#0a0a0a] w-[48px] h-[48px] sm:w-[52px] sm:h-[52px] rounded-full text-xl shadow-[0_4px_24px_rgba(200,241,53,0.3)] transition-all hover:scale-110 flex items-center justify-center border-none cursor-pointer"
+        className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 z-[200] bg-[var(--p-accent)] text-[#0a0a0a] w-[48px] h-[48px] sm:w-[52px] sm:h-[52px] rounded-full text-xl shadow-[0_4px_24px_rgba(200,241,53,0.3)] transition-all hover:scale-110 flex items-center justify-center border-none cursor-pointer"
         title="Ask me anything"
       >
         💬
@@ -91,7 +122,7 @@ export function ChatWidget() {
             initial={{ opacity: 0, scale: 0.95, y: 12, originX: 1, originY: 1 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
-            className="fixed bottom-[10rem] right-4 md:bottom-[5.5rem] md:right-8 z-[200] w-[calc(100vw-2rem)] sm:w-[380px] bg-[var(--p-bg2)] border border-[var(--p-border2)] rounded-2xl overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.6)] flex flex-col max-h-[60vh] sm:max-h-[520px]"
+            className="fixed bottom-[5rem] right-4 sm:bottom-[5.5rem] sm:right-8 z-[200] w-[calc(100vw-2rem)] sm:w-[380px] bg-[var(--p-bg2)] border border-[var(--p-border2)] rounded-2xl overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.6)] flex flex-col max-h-[70vh] sm:max-h-[520px]"
           >
             {/* Header */}
             <div className="p-4 border-b border-[var(--p-border)] flex items-center justify-between">

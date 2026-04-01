@@ -13,40 +13,9 @@ const COMMITS = [
 ];
 
 export function GithubActivity() {
-  const [commits, setCommits] = useState<any[]>(COMMITS);
   const [heatmapCells, setHeatmapCells] = useState<{ id: number; cls: string; title: string }[]>([]);
 
   useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const res = await fetch("https://api.github.com/users/mdjtk/events/public?per_page=20");
-        if (res.ok) {
-          const data = await res.json();
-          const pushEvents = data.filter((e: any) => e.type === "PushEvent").slice(0, 5);
-          
-          if (pushEvents.length > 0) {
-            const formattedCommits = pushEvents.map((e: any) => {
-              const commit = e.payload.commits && e.payload.commits[0];
-              const timeDiff = Date.now() - new Date(e.created_at).getTime();
-              const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-              const days = Math.floor(hours / 24);
-              const timeStr = days > 0 ? `${days}d` : `${hours}h`;
-              
-              return {
-                msg: commit ? commit.message.split('\n')[0] : 'Update',
-                repo: e.repo.name.split('/')[1] || e.repo.name,
-                time: timeStr
-              };
-            });
-            setCommits(formattedCommits);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchEvents();
-
     const cells = Array.from({ length: window.innerWidth < 768 ? 100 : 364 }, (_, i) => {
       const r = Math.random();
       const cls = r < 0.4 ? 'bg-neutral-100 dark:bg-neutral-900' : r < 0.7 ? 'bg-primary/20' : r < 0.9 ? 'bg-primary/50' : 'bg-primary';
@@ -79,7 +48,7 @@ export function GithubActivity() {
             </div>
             
             <div className="space-y-3">
-              {commits.map((c, i) => (
+              {COMMITS.map((c, i) => (
                 <div key={i} className="p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 flex flex-col gap-1">
                    <div className="flex justify-between items-center">
                      <span className="text-[10px] font-mono text-primary uppercase tracking-wider">{c.repo}</span>

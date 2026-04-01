@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ExpandableBentoGrid, BentoCard } from "@/components/ui/expandable-bento-grid";
 import { FolderPreview, FileNode } from "@/components/ui/folder-preview";
@@ -65,43 +65,14 @@ const PROJECTS = [
 ];
 
 export function ProjectsSection() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchRepos() {
-      try {
-        const res = await fetch("https://api.github.com/users/mdjtk/repos?sort=updated&per_page=6");
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        
-        const formattedProjects = data.map((repo: any, index: number) => ({
-          id: String(index + 1).padStart(2, '0'),
-          title: repo.name,
-          desc: repo.description || 'No description provided.',
-          tags: repo.language ? [repo.language] : ['Code'],
-          wide: index === 0 || index === 3,
-          github: repo.html_url,
-          live: repo.homepage || null,
-        }));
-        setProjects(formattedProjects);
-      } catch (err) {
-        console.error(err);
-        setProjects(PROJECTS); // fallback to static
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchRepos();
-  }, []);
-
-  const allTags = ["All", ...Array.from(new Set(projects.flatMap(p => p.tags)))];
+  const allTags = ["All", ...Array.from(new Set(PROJECTS.flatMap(p => p.tags)))];
   
   const filteredProjects = filter === "All" 
-    ? projects 
-    : projects.filter(p => p.tags.includes(filter));
+    ? PROJECTS 
+    : PROJECTS.filter(p => p.tags.includes(filter));
 
   return (
     <section id="projects" className="px-6 md:px-12 py-32 border-t border-[var(--p-border)] bg-transparent">

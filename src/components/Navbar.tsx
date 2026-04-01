@@ -24,8 +24,8 @@ export function Navbar() {
 
   return (
     <nav className={cn(
-      "fixed bottom-0 md:bottom-auto md:top-0 left-0 right-0 z-40 transition-all duration-300 px-6 py-4",
-      isScrolled ? "bg-white/80 dark:bg-black/80 backdrop-blur-lg border-t md:border-t-0 md:border-b border-neutral-100 dark:border-neutral-900" : "bg-transparent"
+      "fixed top-0 left-0 right-0 z-40 transition-all duration-300 px-6 py-4",
+      isScrolled ? "bg-white/80 dark:bg-black/80 backdrop-blur-lg border-b border-neutral-100 dark:border-neutral-900" : "bg-transparent"
     )}>
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <a href="#hero" className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">
@@ -67,10 +67,10 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="md:hidden absolute bottom-full left-0 right-0 bg-white dark:bg-black border-t border-neutral-100 dark:border-neutral-900 overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900 overflow-hidden"
           >
             <div className="px-6 py-8 flex flex-col gap-6">
               {navItems.map(item => (
